@@ -1,11 +1,11 @@
-# RLua
+# LucidLua
 A Rusty wrapper for Lua. Will clone and compile Lua, then link to it.
 
 Right now a basic version is working, but many data types haven't been implemented.
 
 # Usage
 ```
-use rlua::*;
+use llua::*;
 
 const CODE: &'static str = "
 function my_func()

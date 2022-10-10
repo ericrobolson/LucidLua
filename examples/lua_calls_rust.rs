@@ -1,4 +1,4 @@
-use rlua::*;
+use llua::*;
 
 pub fn multiplication(state: State) -> Int {
     let stack = Stack::new(state);

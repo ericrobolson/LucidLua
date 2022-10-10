@@ -1,4 +1,4 @@
-use rlua::*;
+use llua::*;
 
 fn main() -> Result<(), Error> {
     let mut m = Lua::new();

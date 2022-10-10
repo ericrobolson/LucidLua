@@ -1,4 +1,4 @@
-use rlua::*;
+use llua::*;
 
 const CODE: &'static str = "
 function my_func()
