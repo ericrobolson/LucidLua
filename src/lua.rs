@@ -72,6 +72,9 @@ impl Lua {
             }
         }
 
+        // Since we popped stuff off the stack, but it in logical order.
+        data.reverse();
+
         Ok(data)
     }
 
@@ -158,9 +161,62 @@ fn map_cstr<'a>(c: &CString) -> *const u8 {
 
 #[cfg(test)]
 mod tests {
+    use core::f64::INFINITY;
+
     use crate::lua_core::{luaL_checknumber, Int, State};
 
     use super::*;
+
+    #[test]
+    fn call_with_single_return_value_two_args() {
+        const CODE: &'static str = "
+function my_func(a,b)
+    return a * b
+end
+";
+
+        let mut m = Lua::new();
+        m.activate(Library::all()).unwrap();
+        m.interpret(CODE).unwrap();
+
+        let result = m.call("my_func", [3.into(), 4.into()]).unwrap();
+
+        assert_eq!([Data::Number(12.0)], result);
+    }
+
+    #[test]
+    fn call_with_multiple_return_values_two_args() {
+        const CODE: &'static str = "
+function swapper(a,b)
+    return b,a
+end
+";
+
+        let mut m = Lua::new();
+        m.activate(Library::all()).unwrap();
+        m.interpret(CODE).unwrap();
+
+        let result = m.call("swapper", [3.into(), 4.into()]).unwrap();
+
+        assert_eq!([Data::Number(4.0), 3.0.into()], result);
+    }
+
+    #[test]
+    fn call_div_zero() {
+        const CODE: &'static str = "
+function div(a,b)
+    return a / b
+end
+";
+
+        let mut m = Lua::new();
+        m.activate(Library::all()).unwrap();
+        m.interpret(CODE).unwrap();
+
+        let result = m.call("div", [3.into(), 0.into()]).unwrap();
+
+        assert_eq!([Data::Number(INFINITY)], result);
+    }
 
     #[test]
     fn call_calls_code_correctly() {
